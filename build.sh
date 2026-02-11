@@ -4,5 +4,8 @@ set -o errexit
 
 pip install -r requirements.txt
 
+# Static files collect karo
 python manage.py collectstatic --no-input
-python manage.py migrate
+
+# 👇 YE NAYI LINE JOD DO (Magic Script) 👇
+python db_setup.py
