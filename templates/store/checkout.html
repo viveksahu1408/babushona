@@ -1,0 +1,166 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="section-content padding-y bg-light">
+<div class="container">
+
+<form action="{% url 'place_order' %}" method="POST">
+    {% csrf_token %}
+
+    <div class="row">
+        
+        <aside class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Billing Details</h4>
+                    
+                    <div class="row">
+                        <div class="col form-group mb-3">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" class="form-control" required value="{{ user.first_name }}">
+                        </div>
+                        <div class="col form-group mb-3">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" class="form-control" required value="{{ user.last_name }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" required value="{{ user.email }}">
+                        </div>
+                        <div class="col form-group mb-3">
+                            <label>Phone Number</label>
+                            <input type="text" name="phone" class="form-control" required placeholder="For Order Updates">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Address Line 1</label>
+                        <input type="text" name="address_line_1" class="form-control" required placeholder="House No, Building Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Address Line 2</label>
+                        <input type="text" name="address_line_2" class="form-control" placeholder="Area, Colony (Optional)">
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group mb-3">
+                            <label>City</label>
+                            <input type="text" name="city" class="form-control" required>
+                        </div>
+                        <div class="col form-group mb-3">
+                            <label>State</label>
+                            <input type="text" name="state" class="form-control" required>
+                        </div>
+                        <div class="col form-group mb-3">
+                            <label>Pin Code</label>
+                            <input type="text" name="pin_code" class="form-control" required>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        <aside class="col-lg-6">
+            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3">Order Summary</h5>
+                    
+                    <div class="mb-3" style="max-height: 200px; overflow-y: auto;">
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center">
+                                {% if item.product_variant.image_variant %}
+                                    <img src="{{ item.product_variant.image_variant.url }}" width="40" class="rounded me-2">
+                                {% else %}
+                                    <img src="{{ item.product_variant.product.image.url }}" width="40" class="rounded me-2">
+                                {% endif %}
+                                <div>
+                                    <small class="fw-bold d-block">{{ item.product_variant.product.name }}</small>
+                                    <small class="text-muted">{{ item.quantity }} x ₹{{ item.product_variant.product.price }}</small>
+                                </div>
+                            </div>
+                            <span class="text-muted">₹{{ item.sub_total }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Total Price:</dt>
+                        <dd class="text-end">₹{{ total }}</dd>
+                    </dl>
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Tax:</dt>
+                        <dd class="text-end">₹{{ tax }}</dd>
+                    </dl>
+
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Shipping:</dt>
+                        <dd class="text-end">
+                            {% if shipping_charge > 0 %}
+                                ₹{{ shipping_charge }}
+                            {% else %}
+                                <span class="text-success fw-bold">Free</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    
+                    <hr>
+                    <dl class="dlist-align d-flex justify-content-between h4">
+                        <dt>Grand Total:</dt>
+                        <dd class="text-end text-dark"><strong>₹{{ grand_total }}</strong></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-3">Payment Method</h5>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="payment_method" id="pay_upi" value="UPI" checked>
+                        <label class="form-check-label fw-bold" for="pay_upi">
+                            Pay via UPI / QR Code
+                        </label>
+                    </div>
+
+                    <div class="text-center p-3 border rounded bg-light mb-3">
+                        <p class="small text-muted mb-2">Scan this QR Code to Pay <strong>₹{{ grand_total }}</strong></p>
+                        
+                        <img src="https://static.vecteezy.com/system/resources/previews/012/148/263/non_2x/sample-qr-code-isolate-on-white-background-vector.jpg" alt="UPI QR Code" class="img-fluid border mb-2" style="max-width: 250px;">
+                        
+                        <p class="fw-bold text-primary mb-0">UPI ID: babushona@ybl</p>
+                        <small class="text-muted">(Or use this ID to pay)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-danger">Payment Verification *</label>
+                        <input type="text" name="payment_phone" class="form-control border-danger" placeholder="Enter Phone Number used for Payment" required>
+                        <small class="text-muted">Please enter the mobile number you used on GPay/PhonePe/Paytm.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        Place Order (₹{{ grand_total }})
+                    </button>
+                    
+                    <p class="text-center mt-2 small text-muted">
+                        By clicking above, you agree to our Terms & Conditions.
+                    </p>
+
+                </div>
+            </div>
+            
+        </aside>
+
+    </div> </form> 
+</div>
+</section>
+
+{% endblock %}

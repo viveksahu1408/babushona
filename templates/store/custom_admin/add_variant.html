@@ -1,0 +1,88 @@
+{% extends 'store/custom_admin/admin_base.html' %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Add Stock for: {{ product.name }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold">Color</label>
+                        {{ form.color }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold">Size</label>
+                        {{ form.size }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold">Stock Quantity</label>
+                        {{ form.stock }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-bold">Variant Image (Optional)</label>
+                        {{ form.image_variant }}
+                        <small class="text-muted">If this color looks different, upload here.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">Add Variant</button>
+                    <a href="{% url 'admin_products' %}" class="btn btn-outline-secondary w-100 mt-2">Back to Products</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Current Inventory</h5>
+            </div>
+            <div class="card-body">
+                {% if existing_variants %}
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Color</th>
+                            <th>Size</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in existing_variants %}
+                                            <tr>
+                        <td>{{v.color.name}}</td>
+                        <td>{{ v.size.code }}</td>
+                        <td>{{ v.stock }}</td>
+                        <td>Available</td>
+                        
+                        <td>
+                            <a href="{% url 'admin_edit_variant' v.id %}" class="btn btn-sm btn-info text-white" title="Edit Stock">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'admin_delete_variant' v.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this variant?')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="alert alert-warning">
+                    No variants added yet. Customer cannot buy this product!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg-light">
+<div class="container">
+
+    {% if not cart_items %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+            </div>
+            <h3>Your Cart is Empty</h3>
+            <p class="text-muted">Looks like you haven't added anything to your cart yet.</p>
+            <a href="{% url 'store' %}" class="btn btn-primary mt-3">Start Shopping</a>
+        </div>
+    
+    {% else %}
+    <div class="row">
+        
+        <aside class="col-lg-9">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Shopping Cart</h4>
+                    
+                    {% for item in cart_items %}
+                    <div class="row border-bottom pb-3 mb-3 align-items-center">
+                        
+                        <aside class="col-3 col-md-2">
+                            <div class="img-wrap">
+                                {% if item.product_variant.image_variant %}
+                                    <img src="{{ item.product_variant.image_variant.url }}" class="img-fluid rounded border">
+                                {% else %}
+                                    <img src="{{ item.product_variant.product.image.url }}" class="img-fluid rounded border">
+                                {% endif %}
+                            </div>
+                        </aside>
+
+                        <div class="col-9 col-md-5">
+                            <a href="{{ item.product_variant.product.get_url }}" class="text-decoration-none text-dark fw-bold">
+                                {{ item.product_variant.product.name }}
+                            </a>
+                            <p class="text-muted small mb-1">
+                                Color: {{ item.product_variant.color.name }} <br>
+                                Size: {{ item.product_variant.size.code }}
+                            </p>
+                            <div class="d-md-none fw-bold text-dark mb-2">
+                                Price: ₹{{ item.product_variant.product.price }}
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-3 mt-2 mt-md-0">
+                            <div class="input-group input-group-sm" style="max-width: 120px;">
+                                <a href="{% url 'remove_cart' item.id %}" class="btn btn-light border"> <i class="fa fa-minus"></i> </a>
+                                <input type="text" class="form-control text-center bg-white" value="{{ item.quantity }}" readonly>
+                                <a href="{% url 'add_qty_cart' item.id %}" class="btn btn-light border"> <i class="fa fa-plus"></i> </a>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-2 text-md-end mt-2 mt-md-0">
+                            <div class="d-none d-md-block fw-bold mb-2">
+                                ₹{{ item.sub_total }}
+                            </div>
+                            <a href="{% url 'remove_cart_item' item.id %}" onclick="return confirm('Are you sure you want to remove this item?')" class="btn btn-outline-danger btn-sm"> 
+                                <i class="fa fa-trash"></i> Remove
+                            </a>
+                        </div>
+
+                    </div> 
+                    {% endfor %}
+
+                </div>
+            </div>
+        </aside>
+
+        <aside class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Order Summary</h5>
+                    
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Total Price:</dt>
+                        <dd class="text-end">₹{{ total }}</dd>
+                    </dl>
+                    
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Tax:</dt>
+                        <dd class="text-end">₹{{ tax }}</dd>
+                    </dl>
+
+                    <dl class="dlist-align d-flex justify-content-between">
+                        <dt class="text-muted">Shipping:</dt>
+                        <dd class="text-end">
+                            {% if shipping_charge > 0 %}
+                                ₹{{ shipping_charge }}
+                            {% else %}
+                                <span class="text-success fw-bold">Free</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    <hr>
+                    
+                    <dl class="dlist-align d-flex justify-content-between h5">
+                        <dt>Grand Total:</dt>
+                        <dd class="text-end text-dark"><strong>₹{{ grand_total }}</strong></dd>
+                    </dl>
+                    
+                    <hr>
+                    <p class="small text-muted text-center mb-2">
+                        <i class="fas fa-shield-alt text-success"></i> Safe & Secure Payments
+                    </p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'checkout' %}" class="btn btn-success btn-lg"> Proceed to Checkout </a>
+                        <a href="{% url 'store' %}" class="btn btn-outline-primary">Continue Shopping</a>
+                    </div>
+
+                </div> 
+            </div> 
+        </aside> 
+
+    </div> 
+    {% endif %}
+
+</div> 
+</section>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4">Track Your Order</h3>
+
+                {% if not found %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Order ID</label>
+                        <input type="text" name="order_id" class="form-control" placeholder="e.g. 5" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" class="form-control" placeholder="Registered Mobile No." required>
+                    </div>
+                    
+                    {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-dark w-100">Track Order</button>
+                </form>
+                {% endif %}
+
+                {% if found %}
+                <div class="text-center">
+                    <h5>Order #{{ order.id }}</h5>
+                    <p class="text-muted">Total Amount: <strong>₹{{ order.order_total }}</strong></p>
+                    
+                    <span class="badge bg-primary fs-5 mb-4">{{ order.status }}</span>
+
+                    {% if order.status != 'Cancelled' %}
+                    <div class="progress mb-3" style="height: 30px;">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             style="width: {{ status_percentage }}%">
+                             {{ status_percentage }}%
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between small fw-bold">
+                        <span>Placed</span>
+                        <span>Accepted</span>
+                        <span>Shipped</span>
+                        <span>Delivered</span>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-danger">This order has been cancelled.</div>
+                    {% endif %}
+
+                    <a href="{% url 'track_order' %}" class="btn btn-outline-dark btn-sm mt-4">Track Another Order</a>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

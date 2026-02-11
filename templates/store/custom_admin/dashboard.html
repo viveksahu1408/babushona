@@ -1,0 +1,101 @@
+{% extends 'store/custom_admin/admin_base.html' %}
+
+{% block admin_content %}
+<h2 class="mb-4">Dashboard Overview</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <h6>Total Revenue</h6>
+                <h3>₹{{ total_revenue }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <h6>Total Orders</h6>
+                <h3>{{ total_orders }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+                <h6>Pending Orders</h6>
+                <h3>{{ pending_orders }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <h6>Completed Orders</h6>
+                <h3>{{ completed_orders }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card p-3">
+            <h5>Sales Analytics</h5>
+            <canvas id="salesChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Recent Orders</h5>
+            <table class="table table-sm mt-2">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td>
+                            {% if order.order_number %}
+                                <span class="fw-bold">{{ order.order_number }}</span>
+                            {% else %}
+                                <span class="text-muted">#{{ order.id }}</span> {% endif %}
+                        </td>
+                        <td>{{ order.first_name }}</td>
+                        <td>₹{{ order.order_total }}</td>
+                        <td>
+                            <span class="badge {% if order.status == 'New' %}bg-warning{% elif order.status == 'Completed' %}bg-success{% else %}bg-primary{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'admin_order_list' %}" class="btn btn-outline-dark btn-sm w-100 mt-2">View All Orders</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('salesChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Monthly Sales (₹)',
+                data: [12000, 19000, 3000, 5000, 2000, {{ total_revenue }}], // Last wala real h
+                backgroundColor: '#3b82f6'
+            }]
+        }
+    });
+</script>
+
+{% endblock %}

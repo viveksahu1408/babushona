@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %} <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babushona</title>
+
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" type="text/css" />
+
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar-brand { letter-spacing: 1px; }
+        .product-card:hover { transform: translateY(-5px); transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        /* Cart Badge Style */
+        .cart-badge {
+            font-size: 0.75rem;
+            position: relative;
+            top: -2px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+             
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+          <span style="color: rgb(240, 60, 90)">BABU</span><span class="white-text">SHONA</span>
+           </a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                <form action="{% url 'search' %}" class="d-flex mx-auto my-2 my-lg-0" style="width: 40%;">
+                    <input class="form-control me-2" type="search" placeholder="Search for T-shirts..." name="keyword" required>
+                    <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'store' %}">Store</a></li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'store' %}">All Products</a></li>
+                            {% for category in links %}
+                                <li><a class="dropdown-item" href="{{ category.get_url }}">{{ category.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    <li class="nav-item"><a class="nav-link" href="{% url 'track_order' %}">Track</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'cart' %}">
+                            <i class="fas fa-shopping-cart"></i> Cart 
+                            <span class="badge bg-warning text-dark rounded-pill cart-badge">{{ cart_count }}</span>
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown ms-2">
+                            <a class="nav-link dropdown-toggle btn btn-outline-secondary text-light border-0" href="#" data-bs-toggle="dropdown">
+                                Hello, {{ user.first_name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'handle_logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item ms-2"><a class="nav-link" href="{% url 'handle_login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <form action="{% url 'search' %}" class="search-wrap" method="GET">
+            <div class="input-group">
+                <input type="text" class="form-control rounded-pill bg-light border-5" name="keyword" placeholder="Search for products..." style="padding-left: 20px;">
+                <button class="btn" type="submit" style="position: absolute; right: 10px; z-index: 10; border: none; background: transparent;">
+                    <i class="fa fa-search text-muted"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="container mt-4 mb-5">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="bg-dark text-white pt-4 pb-2 mt-5">
+    
+  <div class="container">
+        <div class="row">
+            
+            <div class="col-md-3 mb-3">
+                <h5 class="text-uppercase fw-bold" style="color: rgb(240, 60, 90)">Babushona</h5>
+                <p class="small text-white-500">
+                    Fashion that speaks your language. Premium quality T-shirts designed for comfort and style. Based in Katni, MP.
+                </p>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <h5 class="text-uppercase fw-bold"style="color: rgb(240, 60, 90)">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{% url 'about' %}" class="text-white-50 text-decoration-none hover-white">About Us</a></li>
+                    <li class="mb-2"><a href="{% url 'track_order' %}" class="text-white-50 text-decoration-none hover-white">Track Order</a></li>
+                    <li class="mb-2"><a href="{% url 'privacy' %}" class="text-white-50 text-decoration-none hover-white">Privacy Policy</a></li>
+                    <li class="mb-2"><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none hover-white">About Us</a></li>
+
+                </ul>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <h5 class="text-uppercase fw-bold" style="color: rgb(240, 60, 90)" >Contact Us</h5>
+                <p class="small text-white-500 mb-1"><i class="fas fa-map-marker-alt me-2"></i> Katni, Madhya Pradesh</p>
+                <p class="small text-white-500 mb-1"><i class="fas fa-phone me-2"></i> +91-7999182954</p>
+                <p class="small text-white-500"><i class="fas fa-envelope me-2"></i> support@babushonawear.com</p>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <h5 class="text-uppercase fw-bold " style="color: rgb(240, 60, 90)">Follow Us</h5>
+                <p class="small text-white">Stay connected for new drops!</p>
+                <div class="d-flex gap-3">
+                    <a href="https://www.instagram.com/decodewebtech" target="_blank" class="text-white fs-4 social-hover">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    
+                    <a href="https://wa.me/917999182954" target="_blank" class="text-white fs-4 social-hover">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+
+                    <a href="#" class="text-white fs-4 social-hover">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+
+                    <a href="#" class="text-white fs-4 social-hover">
+                        <i class="fab fa-twitter"></i> </a>
+
+                    <a href="#" class="text-white fs-4 social-hover">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+
+                     <a href="#" class="text-white fs-4 social-hover">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start small text-white-50">
+                &copy; 2026 Babushona Wear. All rights reserved.
+            </div>
+            <div class="col-md-6 text-center text-md-end small text-white-50">
+                Developed by <strong><a href="https://www.instagram.com/decodewebtech" target="_blank" class="text-warning text-decoration-none">Decode Webtech</a></strong>
+            </div>
+        </div>
+    </div>
+
+
+</footer>
+<nav class="navbar fixed-bottom navbar-light bg-white d-block d-md-none shadow-lg border-top" style="padding: 0; height: 60px; z-index: 1000;">
+    <div class="container-fluid d-flex justify-content-around align-items-center h-100">
+        
+        <a href="{% url 'home' %}" class="text-decoration-none text-center w-25">
+            <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-home fs-5 {% if request.path == '/' %}text-danger{% else %}text-muted{% endif %}"></i>
+                <span class="small {% if request.path == '/' %}text-danger fw-bold{% else %}text-muted{% endif %}" style="font-size: 10px;">Home</span>
+            </div>
+        </a>
+
+        <a href="{% url 'store' %}" class="text-decoration-none text-center w-25">
+            <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-th-large fs-5 {% if '/store/' in request.path %}text-danger{% else %}text-muted{% endif %}"></i>
+                <span class="small {% if '/store/' in request.path %}text-danger fw-bold{% else %}text-muted{% endif %}" style="font-size: 10px;">Store</span>
+            </div>
+        </a>
+
+        <a href="{% url 'cart' %}" class="text-decoration-none text-center w-25 position-relative">
+            <div class="d-flex flex-column align-items-center">
+                <div class="position-relative">
+                    <i class="fas fa-shopping-cart fs-5 {% if '/cart/' in request.path %}text-danger{% else %}text-muted{% endif %}"></i>
+                    {% if cart_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style="font-size: 8px; padding: 3px 5px;">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
+                </div>
+                <span class="small {% if '/cart/' in request.path %}text-danger fw-bold{% else %}text-muted{% endif %}" style="font-size: 10px;">Cart</span>
+            </div>
+        </a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="text-decoration-none text-center w-25">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-user fs-5 {% if '/dashboard/' in request.path %}text-danger{% else %}text-muted{% endif %}"></i>
+                    <span class="small {% if '/dashboard/' in request.path %}text-danger fw-bold{% else %}text-muted{% endif %}" style="font-size: 10px;">Account</span>
+                </div>
+            </a>
+        {% else %}
+            <a href="{% url 'handle_login' %}" class="text-decoration-none text-center w-25">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-user fs-5 {% if '/login/' in request.path %}text-primary{% else %}text-muted{% endif %}"></i>
+                    <span class="small {% if '/login/' in request.path %}text-primary fw-bold{% else %}text-muted{% endif %}" style="font-size: 10px;">Login</span>
+                </div>
+            </a>
+        {% endif %}
+
+    </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<style>
+    .hover-white:hover { color: #ec5a5a !important; padding-left: 5px; transition: 0.3s; }
+    .social-hover:hover { transform: translateY(-3px); color: #ea3b55 !important; transition: 0.3s; }
+
+    @media (max-width: 768px) {
+        body {
+            padding-bottom: 70px; /* Bottom Nav ki height se thoda zyada */
+        }
+    }
+</style>

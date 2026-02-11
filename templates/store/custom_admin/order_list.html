@@ -1,0 +1,59 @@
+{% extends 'store/custom_admin/admin_base.html' %}
+
+{% block admin_content %}
+<h2>Order Management</h2>
+<div class="card mt-4 p-3">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Bill</th>
+                <th>Payment Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.first_name }} {{ order.last_name }}</td>
+                <td>{{ order.phone }}</td>
+                <td>₹{{ order.order_total }}</td>
+                <td>
+                    <form action="{% url 'admin_order_update' order.id %}" method="POST" class="d-flex">
+                        {% csrf_token %}
+                        <select name="status" class="form-select form-select-sm me-2">
+                            <option value="New" {% if order.status == 'New' %}selected{% endif %}>New</option>
+                            <option value="Accepted" {% if order.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                            <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                            <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>Completed</option>
+                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-dark"><i class="fas fa-check"></i></button>
+                    </form>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-info text-white">View Details</button>
+                </td>
+                <td>
+                <a href="{% url 'admin_invoice' order.id %}" class="btn btn-sm btn-secondary text-white" title="Download Invoice">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </a>
+                </td>
+                <td>
+                {% if order.payment_phone %}
+                    <span class="badge bg-warning text-dark">{{ order.payment_phone }}</span>
+                {% else %}
+                    <span class="text-muted">COD / Not Provided</span>
+                {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

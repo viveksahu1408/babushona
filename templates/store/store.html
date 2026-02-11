@@ -1,0 +1,36 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        {% if 'search' in request.path %}
+            <h4>Search Results</h4>
+        {% else %}
+            <h4>Our Store</h4>
+        {% endif %}
+        <span class="text-muted">{{ product_count }} Items found</span>
+    </div>
+
+    <div class="row">
+        {% if products %}
+            {% for product in products %}
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card product-card h-100 border-0">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" style="font-size: 1rem;">{{ product.name }}</h5>
+                        <p class="card-text fw-bold text-success">₹{{ product.price }}</p>
+                        <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-dark btn-sm w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center mt-5">
+                <h3 class="text-muted">No products found matching your query.</h3>
+                <a href="{% url 'store' %}" class="btn btn-primary mt-3">View All Products</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

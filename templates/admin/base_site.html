@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Babushona Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">✅ Babushona Database ✅</a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+<div id="user-tools">
+    Welcome,
+    <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+
+    <a href="{% url 'admin_dashboard' %}" target="_blank" style="color: #f1c40f; font-weight: bold; text-decoration: none; margin: 0 15px;">
+        ⭐ Go to Owner Dashboard
+    </a>
+
+    <a href="{% url 'admin:logout' %}">Log out</a>
+</div>
+{% endblock %}

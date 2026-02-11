@@ -1,0 +1,89 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if user.userprofile.profile_picture %}
+                            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="rounded-circle" width="80" height="80" style="object-fit:cover;">
+                        {% else %}
+                             <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 30px;">
+                                {{ user.first_name|slice:":1" }}
+                             </div>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="fw-bold">Hello, {{ user.first_name }}</h5>
+                    <p class="text-muted small">{{ user.email }}</p>
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'dashboard' %}" class="btn btn-dark">My Orders</a>
+                        
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-dark">Edit Profile</a>
+                        <a href="{% url 'change_password' %}" class="btn btn-outline-dark">Change Password</a>
+                        
+                        <a href="{% url 'cart' %}" class="btn btn-outline-secondary">My Cart</a>
+                        <a href="{% url 'handle_logout' %}" class="btn btn-danger mt-3">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h3 class="mb-4">My Orders ({{ order_count }})</h3>
+            
+            {% if orders %}
+                {% for order in orders %}
+                <div class="card mb-3 shadow-sm border-0">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Order #{{ order.id }}</strong>
+                            <span class="text-muted ms-2">| {{ order.created_at|date:"d M Y" }}</span>
+                        </div>
+                        
+                        {% if order.status == 'New' %}
+                            <span class="badge bg-secondary">Processing</span>
+                        {% elif order.status == 'Accepted' %}
+                            <span class="badge bg-primary">Confirmed</span>
+                        {% elif order.status == 'Shipped' %}
+                            <span class="badge bg-info text-dark">Shipped</span>
+                        {% elif order.status == 'Completed' %}
+                            <span class="badge bg-success">Delivered</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <p class="mb-1"><strong>Total:</strong> Rs. {{ order.order_total }}</p>
+                                <p class="mb-1 text-muted"><small>Ship to: {{ order.address_line_1 }}, {{ order.city }}</small></p>
+                            </div>
+                            
+                            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                {% if order.order_number %}
+                                    <a href="{% url 'order_detail' order.order_number %}" class="btn btn-outline-dark btn-sm">View Details / Track</a>
+                                {% else %}
+                                    <button class="btn btn-light btn-sm text-muted" disabled>Processing ID...</button>
+                                {% endif %}
+                            </div>
+                            </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info text-center p-5">
+                    <h4>No orders yet!</h4>
+                    <p>You haven't placed any orders yet.</p>
+                    <a href="{% url 'store' %}" class="btn btn-primary mt-2">Start Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

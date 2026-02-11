@@ -1,0 +1,46 @@
+{% extends 'store/custom_admin/admin_base.html' %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Update Inventory</h5>
+                <small>{{ variant.product.name }} ({{ variant.color.name }} - {{ variant.size.code }})</small>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold">Stock Quantity</label>
+                        {{ form.stock }}
+                        <small class="text-muted">Update the total number of items available.</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label>Color</label>
+                            {{ form.color }}
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label>Size</label>
+                            {{ form.size }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Variant Image</label>
+                        {{ form.image_variant }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Update Stock</button>
+                        <a href="{% url 'admin_add_variant' variant.product.id %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

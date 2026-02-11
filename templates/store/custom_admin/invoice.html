@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ order.order_number }}</title>
+    <style>
+        @page { size: a4 portrait; margin: 1cm; }
+        body { font-family: Helvetica, sans-serif; color: #333; font-size: 13px; }
+        
+        /* Layout Table (Ye hai magic fix) */
+        .layout-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        .layout-table td { vertical-align: top; border: none; padding: 0; }
+        
+        /* Header */
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .store-name { font-size: 26px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .store-details { font-size: 12px; color: #555; margin-top: 5px; }
+
+        /* Headings like 'BILLED TO' */
+        .info-header { font-weight: bold; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 3px; display: inline-block; width: 100%; }
+        
+        /* Items Table (Product List) */
+        .item-table { width: 100%; margin-top: 20px; border: 1px solid #ddd; border-collapse: collapse; }
+        .item-table th { background-color: #f4f4f4; text-align: left; padding: 8px; font-size: 12px; border-bottom: 1px solid #aaa; }
+        .item-table td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 12px; }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .total-row td { font-weight: bold; border-top: 2px solid #333; font-size: 14px; }
+        
+        /* Footer */
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        
+        /* Helper classes */
+        .gray-text { color: #555; }
+        .bold-text { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="store-name">Babushona Wear</div>
+        <div class="store-details">
+            Katni, Madhya Pradesh - 483501<br>
+            Phone: +91-7999182954 | Email: support@babushonawear.com
+        </div>
+        <h2 style="margin-top: 10px;">INVOICE</h2>
+    </div>
+
+    <table class="layout-table">
+        <tr>
+            <td width="55%" style="padding-right: 20px;">
+                <div class="info-header">BILLED TO</div>
+                <div class="gray-text">
+                    <span class="bold-text" style="color: #000; font-size: 14px;">{{ order.first_name }} {{ order.last_name }}</span><br>
+                    {{ order.address_line_1 }}<br>
+                    {% if order.address_line_2 %}{{ order.address_line_2 }}<br>{% endif %}
+                    {{ order.city }}, {{ order.state }}<br>
+                    <strong>Phone:</strong> {{ order.phone }}<br>
+                    <strong>Email:</strong> {{ order.email }}
+                </div>
+            </td>
+
+            <td width="45%" align="right">
+                <div class="info-header" style="text-align: right;">ORDER DETAILS</div>
+                <div class="gray-text">
+                    <strong>Order ID #:</strong> {{ order.id }}<br>
+                    <strong>Date:</strong> {{ order.created_at|date:"d M Y" }}<br>
+                    <strong>Payment:</strong> UPI / Manual<br>
+                    <strong>Pay Phone:</strong> {% if order.payment_phone %}{{ order.payment_phone }}{% else %}N/A{% endif %}<br>
+                    <strong>Status:</strong> {{ order.status }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="item-table" cellspacing="0">
+        <thead>
+            <tr>
+                <th width="40%">Item Description</th> 
+                <th width="20%">Variant</th>
+                <th width="15%" class="text-right">Price</th>
+                <th width="10%" class="text-right">Qty</th>
+                <th width="15%" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_products %}
+            <tr>
+                <td>
+                    <strong>{{ item.product_variant.product.name }}</strong>
+                </td>
+                
+                <td>
+                    {% if item.product_variant %}
+                        Color: {{ item.product_variant.color.name }}<br>
+                        Size: {{ item.product_variant.size.code }}
+                    {% else %}
+                        Standard
+                    {% endif %}
+                </td>
+
+                <td class="text-right">Rs. {{ item.product_price }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+
+                <td class="text-right">
+                    <strong>Rs. {{ item.product_price }}</strong>
+                </td>
+            </tr>
+            {% endfor %}
+            
+            <tr>
+                <td colspan="3" style="border:none;"></td>
+                <td class="text-right" style="padding-top: 15px;">Shipping:</td>
+                <td class="text-right" style="padding-top: 15px;">
+                    {% if order.order_total < 500 %}
+                        Rs. 50
+                    {% else %}
+                        Free
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="3" style="border:none;"></td>
+                <td class="text-right">Tax:</td>
+                <td class="text-right">Rs. {{ order.tax }}</td>
+            </tr>
+
+            <tr class="total-row">
+                <td colspan="3" style="border:none;"></td>
+                <td class="text-center" style="padding: 10px 0;">GRAND TOTAL:</td>
+                <td class="text-center" style="padding: 10px 0;">Rs. {{ order.order_total }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Thank you for shopping with Babushona Wear!</p>
+        <p>For any queries, contact us at <strong>+91-7999182954</strong></p>
+    </div>
+
+</body>
+</html>

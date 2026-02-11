@@ -1,0 +1,37 @@
+{% extends 'store/custom_admin/admin_base.html' %}
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h4>All Categories</h4>
+            <table class="table table-striped mt-3">
+                <thead><tr><th>Image</th><th>Name</th><th>Slug</th><th>Action</th></tr></thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td>
+                            {% if cat.image %}<img src="{{ cat.image.url }}" width="40">{% endif %}
+                        </td>
+                        <td>{{ cat.name }}</td>
+                        <td>{{ cat.slug }}</td>
+                        <td>
+                            <a href="{% url 'admin_delete_category' cat.id %}" class="text-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card p-4 bg-light">
+            <h5>Add New Category</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">{{ form.as_p }}</div>
+                <button type="submit" class="btn btn-dark w-100">Add Category</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body text-center p-5">
+                    
+                    <div class="mb-4">
+                        <i class="fa fa-check-circle text-success" style="font-size: 80px;"></i>
+                    </div>
+
+                    <h2 class="text-success fw-bold">Thank You for Your Order!</h2>
+                    <p class="lead text-muted">Your order has been placed successfully.</p>
+                    
+                    <div class="alert alert-light border mt-3">
+                        <h5>Order Number: <strong>{{ order.order_number }}</strong></h5>
+                    </div>
+
+                    <div class="card mt-4 mb-4 text-start bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-truck"></i> Tracking Status</h5>
+                            <hr>
+                            
+                            {% if order.tracking_number %}
+                                <p class="mb-1"><strong>Status:</strong> <span class="text-primary fw-bold">Shipped</span></p>
+                                <p class="mb-2"><strong>Tracking ID:</strong> {{ order.tracking_number }}</p>
+                                
+                                <a href="https://www.google.com/search?q={{ order.tracking_number }}" target="_blank" class="btn btn-warning btn-sm">
+                                    Track Order Now
+                                </a>
+                            {% else %}
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-secondary">Preparing for Dispatch</span></p>
+                                <small class="text-muted">We will update the tracking number here once your item is shipped (usually within 24 hours).</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <p class="text-muted small">A confirmation email has been sent to <strong>{{ order.email }}</strong>.</p>
+                    
+                    <a href="{% url 'store' %}" class="btn btn-dark btn-lg rounded-pill mt-3">
+                        <i class="fa fa-shopping-bag"></i> Continue Shopping
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

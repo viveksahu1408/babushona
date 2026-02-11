@@ -1,0 +1,38 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="text-center mb-4">Login</h3>
+                
+                <form action="{% url 'handle_login' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
+                    </div>
+                    <div class="mb-3 text-end">
+    <a href="{% url 'reset_password' %}" class="text-decoration-none small">Forgot Password?</a>
+</div>
+                    <button type="submit" class="btn btn-dark w-100">Login</button>
+                </form>
+                
+                <p class="text-center mt-3">New here? <a href="{% url 'handle_register' %}">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
